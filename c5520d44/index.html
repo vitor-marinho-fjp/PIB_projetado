@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt" xml:lang="pt"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.189">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Vitor Marinho">
+<meta name="author" content="Renato Vale">
+<meta name="description" content="Tutorial transformação digital nº 2">
+
+<title> ANÁLISE DE COMPONENTES PRINCIPAIS</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+<script src="Tutorial-ACP_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Tutorial-ACP_files/libs/quarto-html/quarto.js"></script>
+<script src="Tutorial-ACP_files/libs/quarto-html/popper.min.js"></script>
+<script src="Tutorial-ACP_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Tutorial-ACP_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Tutorial-ACP_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Tutorial-ACP_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Tutorial-ACP_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Tutorial-ACP_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Tutorial-ACP_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Índice</h2>
+   
+  <ul>
+  <li><a href="#introdução" id="toc-introdução" class="nav-link active" data-scroll-target="#introdução"><span class="toc-section-number">1</span>  Introdução</a></li>
+  <li><a href="#como-calcular-acp-no-r" id="toc-como-calcular-acp-no-r" class="nav-link" data-scroll-target="#como-calcular-acp-no-r"><span class="toc-section-number">2</span>  Como calcular ACP no R</a>
+  <ul class="collapse">
+  <li><a href="#função-de-redução-de-dimensionalidade" id="toc-função-de-redução-de-dimensionalidade" class="nav-link" data-scroll-target="#função-de-redução-de-dimensionalidade"><span class="toc-section-number">2.0.1</span>  Função de Redução de dimensionalidade</a></li>
+  <li><a href="#visualização-da-qualidade-no-mapa-de-fatores" id="toc-visualização-da-qualidade-no-mapa-de-fatores" class="nav-link" data-scroll-target="#visualização-da-qualidade-no-mapa-de-fatores"><span class="toc-section-number">2.1</span>  <strong>Visualização da qualidade no mapa de fatores:</strong></a>
+  <ul class="collapse">
+  <li><a href="#visualização-da-comunaliade-explicada-por-cada-componente" id="toc-visualização-da-comunaliade-explicada-por-cada-componente" class="nav-link" data-scroll-target="#visualização-da-comunaliade-explicada-por-cada-componente"><span class="toc-section-number">2.1.1</span>  <strong>Visualização da comunaliade explicada por cada componente:</strong></a></li>
+  <li><a href="#sumarização-dos-resultados" id="toc-sumarização-dos-resultados" class="nav-link" data-scroll-target="#sumarização-dos-resultados"><span class="toc-section-number">2.1.2</span>  <strong>Sumarização dos resultados:</strong></a></li>
+  <li><a href="#referências" id="toc-referências" class="nav-link" data-scroll-target="#referências"><span class="toc-section-number">2.1.3</span>  Referências</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><img src="logo_td.png" alt="Logo" style="vertical-align: middle; width:150px"> ANÁLISE DE COMPONENTES PRINCIPAIS</h1>
+<p class="subtitle lead">Compartilhando o código em R</p>
+</div>
+
+<div>
+  <div class="description">
+    <p>Tutorial transformação digital nº 2</p>
+  </div>
+</div>
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Autores</div>
+  <div class="quarto-title-meta-heading">Afiliações</div>
+  
+    <div class="quarto-title-meta-contents">
+    <a href="https://github.com/vitor-marinho-fjp">Vitor Marinho</a> 
+  </div>
+    <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Fundação João Pinheiro/Cedeplar
+          </p>
+      </div>
+      <div class="quarto-title-meta-contents">
+    <a href="https://github.com/renato-vale">Renato Vale</a> 
+  </div>
+    <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Fundação João Pinheiro
+          </p>
+      </div>
+    </div>
+
+<div class="quarto-title-meta">
+
+      
+    
+  </div>
+  
+<div>
+  <div class="abstract">
+    <div class="abstract-title">Resumo</div>
+    <p>Este tutorial aborda a análise de componentes principais (PCA) em R. Exploraremos os conceitos fundamentais da PCA e demonstraremos como implementá-la em R. O tutorial inclui exemplos práticos e código fonte para ajudar os leitores a compreender e aplicar a PCA em seus próprios projetos de análise de dados.</p>
+  </div>
+</div>
+
+</header>
+
+<section id="introdução" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Introdução</h1>
+<p>A análise de componentes principais (ACP) é uma técnica estatística amplamente utilizada para redução de dimensionalidade e extração de informações relevantes de conjuntos de dados multivariados. O objetivo principal da PCA é transformar um conjunto de variáveis correlacionadas em um novo conjunto de variáveis não correlacionadas, chamadas de componentes principais. Cada componente principal é uma combinação linear das variáveis originais e é ordenado de acordo com a quantidade de variação que ele captura. Isso permite a identificação dos padrões mais significativos dos dados, facilitando a interpretação e visualização. <span class="citation" data-cites="manly2016">(<a href="#ref-manly2016" role="doc-biblioref">Manly e Navarro Alberto 2016</a>)</span></p>
+<p>Estes são alguns exemplos de aplicações:</p>
+<p>Estudos de qualidade de vida: Através da ACP, é possível identificar dimensões principais que influenciam a qualidade de vida em uma determinada região, permitindo que políticas públicas sejam direcionadas de forma mais eficaz.</p>
+<p>Análise de desigualdade social: A ACP pode ser aplicada em indicadores sociais e econômicos para compreender os principais fatores que contribuem para a desigualdade entre grupos populacionais.</p>
+<p>Análise de dados de saúde: A ACP é útil para identificar padrões em grandes conjuntos de dados de saúde, como fatores de risco e grupos de doenças.</p>
+<p>Estudos de mercado: A ACP é aplicada em pesquisas de mercado para identificar segmentos de clientes com características semelhantes, ajudando as empresas a direcionar suas estratégias de marketing.</p>
+<p>Análise de indicadores econômicos: Através da ACP, é possível reduzir um grande número de indicadores econômicos em poucos componentes principais, facilitando a compreensão das principais tendências e correlações na economia.</p>
+<p>Previsão econômica: A ACP pode ser usada para reduzir a dimensionalidade de séries temporais econômicas e melhorar a precisão das previsões de indicadores macroeconômicos.</p>
+</section>
+<section id="como-calcular-acp-no-r" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Como calcular ACP no R</h1>
+<p>Antes de iniciar o processo de ACP, é necessário carregar as bibliotecas necessárias.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Lista de pacotes necessários</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>pacotes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"tidyverse"</span>, <span class="st">"readxl"</span>, <span class="st">"FactoMineR"</span>, <span class="st">"factoextra"</span>, <span class="st">"gt"</span>, <span class="st">'grateful'</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Instalar e carregar pacotes ausentes</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (pacote <span class="cf">in</span> pacotes) {</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(pacote, <span class="at">character.only =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">install.packages</span>(pacote)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">library</span>(pacote, <span class="at">character.only =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="importação-dos-dados" class="level4" data-number="2.0.0.1">
+<h4 data-number="2.0.0.1" class="anchored" data-anchor-id="importação-dos-dados"><span class="header-section-number">2.0.0.1</span> Importação dos dados:</h4>
+<p>Os dados utilizados para a análise de componentes principais são apenas um exemplo, a base comtém informações sobre o PIB, Número de óbitos, Despesas com saúde e número de beneficiários do bolsa família. Para calcular ACP os dados devem conter as variáveis numéricas.</p>
+<p><strong>Disponível em</strong>: <a href="https://docs.google.com/spreadsheets/d/1-9DPjV07Pei6VZWKmjO3q1FM_vXfJVD3/edit?usp=sharing&amp;ouid=114631608050578367156&amp;rtpof=true&amp;sd=true" title="Dados">Dados</a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Importar dados </span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_acp <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"df_acp.xlsx"</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="visualização-da-matriz-de-dados" class="level4" data-number="2.0.0.2">
+<h4 data-number="2.0.0.2" class="anchored" data-anchor-id="visualização-da-matriz-de-dados"><span class="header-section-number">2.0.0.2</span> Visualização da matriz de dados</h4>
+<p>Podemos usar o comando <code>gt()</code> para visualizar uma tabela estatistica do conjunto de dados. Isso ajuda a garantir que os dados foram carregados corretamente antes de prosseguir com a análise.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_acp <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<div id="tbeevgpebx" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#tbeevgpebx table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#tbeevgpebx thead, #tbeevgpebx tbody, #tbeevgpebx tfoot, #tbeevgpebx tr, #tbeevgpebx td, #tbeevgpebx th {
+  border-style: none;
+}
+
+#tbeevgpebx p {
+  margin: 0;
+  padding: 0;
+}
+
+#tbeevgpebx .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#tbeevgpebx .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#tbeevgpebx .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#tbeevgpebx .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#tbeevgpebx .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#tbeevgpebx .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#tbeevgpebx .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#tbeevgpebx .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#tbeevgpebx .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#tbeevgpebx .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#tbeevgpebx .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#tbeevgpebx .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#tbeevgpebx .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#tbeevgpebx .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#tbeevgpebx .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#tbeevgpebx .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#tbeevgpebx .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#tbeevgpebx .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#tbeevgpebx .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#tbeevgpebx .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#tbeevgpebx .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#tbeevgpebx .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#tbeevgpebx .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#tbeevgpebx .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#tbeevgpebx .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#tbeevgpebx .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#tbeevgpebx .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#tbeevgpebx .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#tbeevgpebx .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#tbeevgpebx .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#tbeevgpebx .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#tbeevgpebx .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#tbeevgpebx .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#tbeevgpebx .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#tbeevgpebx .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#tbeevgpebx .gt_left {
+  text-align: left;
+}
+
+#tbeevgpebx .gt_center {
+  text-align: center;
+}
+
+#tbeevgpebx .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#tbeevgpebx .gt_font_normal {
+  font-weight: normal;
+}
+
+#tbeevgpebx .gt_font_bold {
+  font-weight: bold;
+}
+
+#tbeevgpebx .gt_font_italic {
+  font-style: italic;
+}
+
+#tbeevgpebx .gt_super {
+  font-size: 65%;
+}
+
+#tbeevgpebx .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#tbeevgpebx .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#tbeevgpebx .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#tbeevgpebx .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#tbeevgpebx .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#tbeevgpebx .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#tbeevgpebx .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="ano">ano</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="sigla_uf">sigla_uf</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="id_municipio">id_municipio</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="numero_obitos">numero_obitos</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="desp_saude">desp_saude</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="populacao_atendida_agua">populacao_atendida_agua</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="populacao_atentida_esgoto">populacao_atentida_esgoto</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="familias_beneficiarias_pbf">familias_beneficiarias_pbf</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="pessoas_pbf">pessoas_pbf</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="valor_pago_pbf">valor_pago_pbf</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="familias_cadastradas_cu">familias_cadastradas_cu</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="pessoas_cadastradas_cu">pessoas_cadastradas_cu</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="pib">pib</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="ano" class="gt_row gt_right">2019</td>
+<td headers="sigla_uf" class="gt_row gt_left">MG</td>
+<td headers="id_municipio" class="gt_row gt_right">3100104</td>
+<td headers="numero_obitos" class="gt_row gt_right">48</td>
+<td headers="desp_saude" class="gt_row gt_right">5088031</td>
+<td headers="populacao_atendida_agua" class="gt_row gt_right">3997</td>
+<td headers="populacao_atentida_esgoto" class="gt_row gt_right">4350</td>
+<td headers="familias_beneficiarias_pbf" class="gt_row gt_right">245</td>
+<td headers="pessoas_pbf" class="gt_row gt_right">706</td>
+<td headers="valor_pago_pbf" class="gt_row gt_right">34731</td>
+<td headers="familias_cadastradas_cu" class="gt_row gt_right">942</td>
+<td headers="pessoas_cadastradas_cu" class="gt_row gt_right">2129</td>
+<td headers="pib" class="gt_row gt_right">127672000</td></tr>
+    <tr><td headers="ano" class="gt_row gt_right">2019</td>
+<td headers="sigla_uf" class="gt_row gt_left">MG</td>
+<td headers="id_municipio" class="gt_row gt_right">3100203</td>
+<td headers="numero_obitos" class="gt_row gt_right">169</td>
+<td headers="desp_saude" class="gt_row gt_right">15933256</td>
+<td headers="populacao_atendida_agua" class="gt_row gt_right">19540</td>
+<td headers="populacao_atentida_esgoto" class="gt_row gt_right">701</td>
+<td headers="familias_beneficiarias_pbf" class="gt_row gt_right">454</td>
+<td headers="pessoas_pbf" class="gt_row gt_right">1747</td>
+<td headers="valor_pago_pbf" class="gt_row gt_right">61298</td>
+<td headers="familias_cadastradas_cu" class="gt_row gt_right">2242</td>
+<td headers="pessoas_cadastradas_cu" class="gt_row gt_right">6290</td>
+<td headers="pib" class="gt_row gt_right">517691000</td></tr>
+    <tr><td headers="ano" class="gt_row gt_right">2019</td>
+<td headers="sigla_uf" class="gt_row gt_left">MG</td>
+<td headers="id_municipio" class="gt_row gt_right">3100302</td>
+<td headers="numero_obitos" class="gt_row gt_right">86</td>
+<td headers="desp_saude" class="gt_row gt_right">8937634</td>
+<td headers="populacao_atendida_agua" class="gt_row gt_right">9356</td>
+<td headers="populacao_atentida_esgoto" class="gt_row gt_right">9356</td>
+<td headers="familias_beneficiarias_pbf" class="gt_row gt_right">945</td>
+<td headers="pessoas_pbf" class="gt_row gt_right">3063</td>
+<td headers="valor_pago_pbf" class="gt_row gt_right">171267</td>
+<td headers="familias_cadastradas_cu" class="gt_row gt_right">1942</td>
+<td headers="pessoas_cadastradas_cu" class="gt_row gt_right">5508</td>
+<td headers="pib" class="gt_row gt_right">203535000</td></tr>
+    <tr><td headers="ano" class="gt_row gt_right">2019</td>
+<td headers="sigla_uf" class="gt_row gt_left">MG</td>
+<td headers="id_municipio" class="gt_row gt_right">3100401</td>
+<td headers="numero_obitos" class="gt_row gt_right">36</td>
+<td headers="desp_saude" class="gt_row gt_right">3325094</td>
+<td headers="populacao_atendida_agua" class="gt_row gt_right">3982</td>
+<td headers="populacao_atentida_esgoto" class="gt_row gt_right">2604</td>
+<td headers="familias_beneficiarias_pbf" class="gt_row gt_right">474</td>
+<td headers="pessoas_pbf" class="gt_row gt_right">1348</td>
+<td headers="valor_pago_pbf" class="gt_row gt_right">99821</td>
+<td headers="familias_cadastradas_cu" class="gt_row gt_right">929</td>
+<td headers="pessoas_cadastradas_cu" class="gt_row gt_right">2431</td>
+<td headers="pib" class="gt_row gt_right">55935000</td></tr>
+    <tr><td headers="ano" class="gt_row gt_right">2019</td>
+<td headers="sigla_uf" class="gt_row gt_left">MG</td>
+<td headers="id_municipio" class="gt_row gt_right">3100500</td>
+<td headers="numero_obitos" class="gt_row gt_right">76</td>
+<td headers="desp_saude" class="gt_row gt_right">4597114</td>
+<td headers="populacao_atendida_agua" class="gt_row gt_right">3263</td>
+<td headers="populacao_atentida_esgoto" class="gt_row gt_right">NA</td>
+<td headers="familias_beneficiarias_pbf" class="gt_row gt_right">781</td>
+<td headers="pessoas_pbf" class="gt_row gt_right">2637</td>
+<td headers="valor_pago_pbf" class="gt_row gt_right">142898</td>
+<td headers="familias_cadastradas_cu" class="gt_row gt_right">1508</td>
+<td headers="pessoas_cadastradas_cu" class="gt_row gt_right">4556</td>
+<td headers="pib" class="gt_row gt_right">93635000</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="limpeza-e-seleção-de-variáveis" class="level4" data-number="2.0.0.3">
+<h4 data-number="2.0.0.3" class="anchored" data-anchor-id="limpeza-e-seleção-de-variáveis"><span class="header-section-number">2.0.0.3</span> Limpeza e seleção de variáveis</h4>
+<p>Antes de proceder com ACP vamos selecionar algumas variaveis</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>dados<span class="ot">&lt;-</span> df_acp <span class="sc">%&gt;%</span> <span class="fu">select</span>(pib, numero_obitos, desp_saude, pessoas_pbf)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="função-de-redução-de-dimensionalidade" class="level3" data-number="2.0.1">
+<h3 data-number="2.0.1" class="anchored" data-anchor-id="função-de-redução-de-dimensionalidade"><span class="header-section-number">2.0.1</span> Função de Redução de dimensionalidade</h3>
+<p>ACP é realizada usando o pacote <code>FactoMineR</code>. Nesse exemplo, o cálculo é feito com comando o <code>PCA</code>, onde “dados” é o dataframe que contém as variáveis a serem analisadas:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>acp <span class="ot">&lt;-</span> <span class="fu">PCA</span>(dados, <span class="at">graph=</span>F)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="visualização-da-qualidade-no-mapa-de-fatores" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="visualização-da-qualidade-no-mapa-de-fatores"><span class="header-section-number">2.1</span> <strong>Visualização da qualidade no mapa de fatores:</strong></h2>
+<p>Para visualizar a qualidade das variáveis no mapa de fatores, usa-se a função <code>fviz_pca_var()</code></p>
+<p>O gráfico que exibe a qualidade (cos²) de cada variável em relação aos componentes principais é uma representação visual da contribuição de cada variável para a formação desses componentes. O “cos²” é a proporção da variância da variável original que é explicada pelo componente principal específico.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#_____ Visualização por valores de cos2: qualidade no mapa de fatores</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_var</span>(acp, <span class="at">col.var =</span> <span class="st">"cos2"</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">gradient.cols =</span> <span class="fu">c</span>(<span class="st">"#00AFBB"</span>, <span class="st">"#E7B800"</span>, <span class="st">"#FC4E07"</span>),</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">repel =</span> <span class="cn">TRUE</span> <span class="co"># Avoid text overlapping </span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>             )</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Tutorial-ACP_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Quando realizamos a Análise de Componentes Principais (ACP), estamos buscando encontrar novas variáveis (os componentes principais) que sejam combinações lineares das variáveis originais, de modo que eles capturem a maior quantidade possível de variação dos dados. Cada componente principal é uma combinação ponderada das variáveis originais, e a quantidade de variação explicada por cada componente é medida pelos autovalores associados a eles.</p>
+<p>O gráfico de qualidade das variáveis em relação aos componentes principais ajuda a identificar quais variáveis têm uma forte influência na definição de cada componente principal e quais têm uma influência mais fraca. Essa informação é útil para entender quais variáveis são mais importantes para explicar a estrutura dos dados e quais têm menos impacto.</p>
+<section id="visualização-da-comunaliade-explicada-por-cada-componente" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="visualização-da-comunaliade-explicada-por-cada-componente"><span class="header-section-number">2.1.1</span> <strong>Visualização da comunaliade explicada por cada componente:</strong></h3>
+<p>A função <code>fviz_eig</code> é utilizada para exibir a inércia explicada por cada componente principal e o pacote <code>plotly</code> permite deixar o gráfico interativo. Ela mostra o quanto de variação dos dados é explicada por cada componente:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_eig</span>(acp, <span class="at">addlabels=</span><span class="cn">TRUE</span>, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">70</span>))</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Tutorial-ACP_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="sumarização-dos-resultados" class="level3" data-number="2.1.2">
+<h3 data-number="2.1.2" class="anchored" data-anchor-id="sumarização-dos-resultados"><span class="header-section-number">2.1.2</span> <strong>Sumarização dos resultados:</strong></h3>
+<p>A função <code>facto_summarize</code> é usada para resumir as informações sobre as variáveis e os componentes principais obtidos a partir da ACP. No exemplo, a sumarização é feita para os dois primeiros componentes principais (axes = 1:2):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">facto_summarize</span>(acp, <span class="st">"var"</span>, <span class="at">axes =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                       name     Dim.1        Dim.2     coord      cos2  contrib
+pib                     pib 0.1710860  0.984893502 0.9992856 0.9992856 26.16030
+numero_obitos numero_obitos 0.9857684 -0.062278615 0.9756180 0.9756180 25.54070
+desp_saude       desp_saude 0.9717458 -0.105023373 0.9553198 0.9553198 25.00931
+pessoas_pbf     pessoas_pbf 0.9431881 -0.005357553 0.8896325 0.8896325 23.28969</code></pre>
+</div>
+</div>
+<p>Analisando as coordenadas das variáveis nos dois componentes principais:</p>
+<p>A variável despesas com saude tem uma forte relação positiva com o primeiro componente principal (Dim.1), mas uma relação negativa muito pequena com o segundo componente principal (Dim.2). Isso sugere que essa variável tem um papel dominante na definição do primeiro componente principal, enquanto sua influência no segundo componente é praticamente insignificante.</p>
+<p>A variável populacao_atendida_agua também possui uma relação muito forte e positiva com o primeiro componente principal (Dim.1), mas uma relação negativa muito pequena com o segundo componente principal (Dim.2). Isso indica que essa variável também é um importante contribuinte para a definição do primeiro componente principal.</p>
+<p>Assim como as duas variáveis anteriores, a “populacao_atentida_esgoto” tem uma relação positiva forte com o primeiro componente principal (Dim.1) e uma relação negativa pequena com o segundo componente principal (Dim.2). Isso sugere que essa variável é relevante para o primeiro componente principal.</p>
+<p>A variável pessoas_beneficiarias_pbf tem uma relação positiva relativamente alta com o primeiro componente principal (Dim.1) e uma relação positiva menor com o segundo componente principal (Dim.2). Isso indica que essa variável contribui significativamente para ambos os componentes principais, mas tem uma importância maior no primeiro.</p>
+<p>Por fim, o PIB tem uma relação positiva muito alta com o segundo componente principal (Dim.2) e uma relação positiva menor com o primeiro componente principal (Dim.1). Isso sugere que essa variável é essencialmente representada pelo segundo componente principal e tem uma importância menor no primeiro.</p>
+</section>
+<section id="referências" class="level3 unnumbered" data-number="2.1.3">
+
+
+</section>
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">2.1.3 Referências</h2><div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
+<div id="ref-manly2016" class="csl-entry" role="doc-biblioentry">
+Manly, Bryan F. J., e Jorge A. Navarro Alberto. 2016. <em>Multivariate Statistical Methods</em>. Chapman; Hall/CRC. <a href="https://doi.org/10.1201/9781315382135">https://doi.org/10.1201/9781315382135</a>.
+</div>
+</div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citação</h2><div><div class="quarto-appendix-secondary-label">BibTeX</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{marinho](https://github.com/vitor-marinho-fjp),
+  author = {{[}Vitor Marinho{]}(https://github.com/vitor-marinho-fjp)
+    and {[}Renato Vale{]}(https://github.com/renato-vale)},
+  editor = {},
+  title = {Tutorial transformação digital n\textsuperscript{o} 2},
+  langid = {pt},
+  abstract = {Este tutorial aborda a análise de componentes principais
+    (PCA) em R. Exploraremos os conceitos fundamentais da PCA e
+    demonstraremos como implementá-la em R. O tutorial inclui exemplos
+    práticos e código fonte para ajudar os leitores a compreender e
+    aplicar a PCA em seus próprios projetos de análise de dados.}
+}
+</code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">Por favor, cite este trabalho como:</div><div id="ref-marinho](https://github.com/vitor-marinho-fjp)" class="csl-entry quarto-appendix-citeas" role="doc-biblioentry">
+[Vitor Marinho](https://github.com/vitor-marinho-fjp), and [Renato
+Vale](https://github.com/renato-vale). n.d. <span>“Tutorial
+transformação digital n<sup>o</sup> 2.”</span>
+</div></div></section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copiada");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
